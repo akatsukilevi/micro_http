@@ -1,7 +1,6 @@
 use serde::{Deserialize, Serialize};
-use tiny_http::{Header, Response, StatusCode};
 
-use super::routing::HttpResponseInner;
+use super::routing::{HttpResponse, HttpResult};
 
 mod errors;
 
@@ -17,7 +16,7 @@ pub enum HttpError {
 }
 
 impl HttpError {
-  pub fn to_response(&self) -> HttpResponseInner {
+  pub fn to_response(&self) -> HttpResult {
     let error = match self {
       HttpError::BadRequest(x) => errors::bad_request(x.clone()),
       HttpError::Unauthorized => errors::unauthorized(),
@@ -28,12 +27,7 @@ impl HttpError {
       HttpError::InternalServerError(x) => errors::internal_server_error(x),
     };
 
-    Response::from_string(serde_json::to_string(&error).unwrap())
-      .with_status_code(StatusCode::from(error.status_code))
-      .with_header(
-        Header::from_bytes(&b"Content-Type"[..], &b"application/json"[..])
-          .unwrap(),
-      )
+    HttpResponse::json(&error, Some(error.status_code))
   }
 }
 

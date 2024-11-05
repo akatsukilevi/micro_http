@@ -1,8 +1,9 @@
-use matchit::Params;
-use tiny_http::{Request, Response};
+use crate::core::routing::{AppState, HttpResponse, HttpResult};
 
-use crate::core::routing::HttpResponse;
-
-pub fn homepage(_req: &Request, _params: Params) -> HttpResponse {
-  Ok(Response::from_string("Welcome"))
+pub fn homepage(
+  _req: &tiny_http::Request,
+  _params: matchit::Params,
+  state: AppState,
+) -> HttpResult {
+  HttpResponse::html(state.render("homepage.html"), None)
 }
