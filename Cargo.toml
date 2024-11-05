@@ -1,0 +1,31 @@
+[package]
+name = "mocha_manager"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+# Web server
+tiny_http = "0.12.0"
+handlebars = "6.2.0"
+matchit = "0.8.4"
+
+# Serialization
+serde = { version = "1.0.214", features = ["derive"] }
+serde_json = "1.0.132"
+
+# Configuration & CLI
+clap = { version = "4.5.20", features = ["derive", "env"] }
+toml = "0.8.19"
+dotenvy = "0.15.7"
+
+# Logging
+env_logger = "0.11.5"
+log = "0.4.22"
+
+# Utilities
+chrono = { version = "0.4.38", default-features = false, features = [
+  "clock",
+  "now",
+  "std",
+] }
+tokio = { version = "1.41.0", features = ["macros", "rt", "rt-multi-thread"] }
