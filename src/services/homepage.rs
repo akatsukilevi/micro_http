@@ -5,5 +5,5 @@ pub fn homepage(
   _params: matchit::Params,
   state: AppState,
 ) -> HttpResult {
-  HttpResponse::html(state.render("homepage.html"), None)
+  HttpResponse::html(state.templates.render("homepage.html"), None)
 }
