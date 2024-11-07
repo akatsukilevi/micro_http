@@ -1,4 +1,5 @@
 use std::io::{Error, ErrorKind};
+use std::sync::{Arc, Mutex};
 
 use serde::{Deserialize, Serialize};
 use tera::{Context, Tera};
@@ -9,12 +10,23 @@ pub struct TemplatingSettings {
 }
 
 pub struct Templater {
-  tera: Tera,
+  tera: Arc<Mutex<Tera>>,
 }
 
 impl Templater {
   pub fn render(&self, name: &str) -> Result<String, tera::Error> {
-    self.tera.render(name, &Context::new())
+    let tera = match self.tera.lock() {
+      Ok(x) => x,
+      Err(e) => {
+        log::error!("Failed to obtain Tera lock: {:?}", e);
+        return Err(tera::Error::io_error(Error::new(
+          ErrorKind::Other,
+          e.to_string(),
+        )));
+      }
+    };
+
+    tera.render(name, &Context::new())
   }
 
   pub fn render_data<T: serde::Serialize>(
@@ -22,8 +34,19 @@ impl Templater {
     name: &str,
     data: &T,
   ) -> Result<String, tera::Error> {
+    let tera = match self.tera.lock() {
+      Ok(x) => x,
+      Err(e) => {
+        log::error!("Failed to obtain Tera lock: {:?}", e);
+        return Err(tera::Error::io_error(Error::new(
+          ErrorKind::Other,
+          e.to_string(),
+        )));
+      }
+    };
+
     let ctx = &Context::from_serialize(&data)?;
-    self.tera.render(name, &ctx)
+    tera.render(name, &ctx)
   }
 
   pub fn render_context(
@@ -31,7 +54,18 @@ impl Templater {
     name: &str,
     ctx: &Context,
   ) -> Result<String, tera::Error> {
-    self.tera.render(name, &ctx)
+    let tera = match self.tera.lock() {
+      Ok(x) => x,
+      Err(e) => {
+        log::error!("Failed to obtain Tera lock: {:?}", e);
+        return Err(tera::Error::io_error(Error::new(
+          ErrorKind::Other,
+          e.to_string(),
+        )));
+      }
+    };
+
+    tera.render(name, &ctx)
   }
 }
 
@@ -42,8 +76,9 @@ pub fn create_templater(
     Ok(t) => t,
     Err(e) => return Err(Error::new(ErrorKind::InvalidData, e)),
   };
-
   tera.autoescape_on(vec![".html", ".sql"]);
+
+  let tera = Arc::new(Mutex::new(tera));
 
   Ok(Templater { tera })
 }

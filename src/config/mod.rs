@@ -1,6 +1,5 @@
 use std::fs::read_to_string;
 
-use env_logger::Env;
 use serde::{Deserialize, Serialize};
 
 use crate::providers;
@@ -29,8 +28,10 @@ pub fn init_config(config_path: Option<String>) -> Settings {
   };
 
   let log_level = settings.log_level.clone().unwrap_or("info".into());
-  env_logger::Builder::from_env(Env::default().default_filter_or(log_level))
-    .init();
+  flexi_logger::Logger::try_with_env_or_str(log_level)
+    .unwrap()
+    .start()
+    .unwrap();
 
   // * Return final settings
   settings

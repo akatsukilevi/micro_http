@@ -5,12 +5,6 @@ use mocha_manager::{cli::*, config::init_config, web_server};
 
 #[tokio::main]
 async fn main() -> Result<(), Error> {
-  // * Load environment variables
-  match dotenvy::dotenv() {
-    Ok(..) => {}
-    Err(..) => {}
-  }
-
   // * Parse arguments and initialize settings
   let args = Args::parse();
   let settings = init_config(args.configuration);
