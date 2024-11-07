@@ -14,6 +14,7 @@ pub mod handle;
 pub mod response;
 
 pub enum ResponseKind {
+  Raw(String),
   Text,
   Json,
   Page,
@@ -22,17 +23,29 @@ pub enum ResponseKind {
 pub struct HttpResponse {
   kind: ResponseKind,
   status: StatusCode,
-  data: String,
+  data: Vec<u8>,
 }
 
 impl HttpResponse {
+  pub fn raw<T: Into<String>>(
+    data: Vec<u8>,
+    mime_type: T,
+    status_code: Option<u16>,
+  ) -> HttpResult {
+    Ok(Self {
+      kind: ResponseKind::Raw(mime_type.into()),
+      data,
+      status: StatusCode::from(status_code.unwrap_or(200)),
+    })
+  }
+
   pub fn text<T: Into<String>>(
     message: T,
     status_code: Option<u16>,
   ) -> HttpResult {
     Ok(Self {
       kind: ResponseKind::Text,
-      data: message.into(),
+      data: message.into().into(),
       status: StatusCode::from(status_code.unwrap_or(200)),
     })
   }
@@ -53,7 +66,7 @@ impl HttpResponse {
 
     Ok(Self {
       kind: ResponseKind::Page,
-      data,
+      data: data.into(),
       status: StatusCode::from(status_code.unwrap_or(200)),
     })
   }
@@ -62,7 +75,7 @@ impl HttpResponse {
     data: &T,
     status_code: Option<u16>,
   ) -> HttpResult {
-    let data = match serde_json::to_string(data) {
+    let data = match serde_json::to_vec(data) {
       Ok(x) => x,
       Err(e) => return Err(HttpError::InternalServerError(e.into())),
     };

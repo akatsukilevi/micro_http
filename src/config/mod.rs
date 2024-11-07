@@ -9,7 +9,7 @@ pub mod web;
 #[derive(Default, Debug, Serialize, Deserialize, Clone)]
 pub struct Settings {
   pub log_level: Option<String>,
-  pub listen: web::ListenSettings,
+  pub web: web::WebSettings,
   pub templates: providers::templates::TemplatingSettings,
 }
 

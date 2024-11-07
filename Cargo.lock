@@ -423,6 +423,7 @@ dependencies = [
  "chrono",
  "clap",
  "flexi_logger",
+ "lazy_static",
  "log",
  "matchit",
  "serde",

@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Page | {% block title %}{% endblock title %}</title>
+  <link rel="stylesheet" href="/assets/css/chota.min.css" />
+  <link rel="stylesheet" href="/assets/css/themes.css" />
+  <script src="/assets/js/htmx.min.js"></script>
+</head>
+<body>
+  <main>
+    {% block content %}{% endblock content %}
+  </main>
+  <hr>
+  <footer>
+    <i>tiny-http server, HTTP/1.1</i>
+  </footer>
+</body>
+</html>
