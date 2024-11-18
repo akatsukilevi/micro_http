@@ -1,3 +1,4 @@
+use sqlx::SqlitePool;
 use std::{
   io::{Error, ErrorKind},
   sync::Arc,
@@ -10,18 +11,23 @@ pub struct AppState {
   pub templates: providers::templates::Templater,
   pub router: routing::Router,
   pub settings: Settings,
+  pub database: SqlitePool,
 }
 
-pub fn listen(settings: &Settings) -> Result<(), Error> {
+pub async fn listen(settings: &Settings) -> Result<(), Error> {
   let server = Server::http(&settings.web.listen)
     .map_err(|e| Error::new(ErrorKind::AddrNotAvailable, e.to_string()))?;
 
   log::info!("Initializing dependencies");
   let templates = providers::templates::create_templater(&settings.templates)?;
+  let database =
+    providers::database::create_database(&settings.database).await?;
+
   let app_state = Arc::new(AppState {
     router: services::router(),
     settings: settings.clone(),
     templates,
+    database,
   });
 
   log::info!("Starting server on http://{}", &settings.web.listen);

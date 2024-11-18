@@ -18,5 +18,5 @@ async fn main() -> Result<(), Error> {
 
   // * Spin up the server
   log::info!("Starting server");
-  web_server::listen(&settings)
+  web_server::listen(&settings).await
 }

@@ -13,6 +13,15 @@ matchit = "0.8.4"
 serde = { version = "1.0.214", features = ["derive"] }
 serde_json = "1.0.132"
 
+# Database
+sqlx = { version = "0.8.2", features = [
+  "runtime-tokio",
+  "sqlite",
+  "chrono",
+  "derive",
+  "macros",
+] }
+
 # Configuration & CLI
 clap = { version = "4.5.20", default-features = false, features = [
   "std",
@@ -27,13 +36,13 @@ log = { version = "0.4.22", features = [
   "max_level_debug",
   "release_max_level_info",
 ] }
-flexi_logger = "0.29.6"
+flexi_logger = { version = "0.29.6", features = ["colors"] }
 
 # Utilities
+tokio = { version = "1.41.0", features = ["macros", "rt", "rt-multi-thread"] }
 chrono = { version = "0.4.38", default-features = false, features = [
   "clock",
   "now",
   "std",
 ] }
-tokio = { version = "1.41.0", features = ["macros", "rt", "rt-multi-thread"] }
 lazy_static = "1.5.0"

@@ -10,6 +10,7 @@ pub mod web;
 pub struct Settings {
   pub log_level: Option<String>,
   pub web: web::WebSettings,
+  pub database: providers::database::DatabaseConfiguration,
   pub templates: providers::templates::TemplatingSettings,
 }
 
