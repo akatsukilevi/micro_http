@@ -13,6 +13,7 @@ async fn main() -> Result<(), Error> {
   if let Some(cmd) = &args.command {
     match cmd {
       Commands::GenerateConfig(x) => return config::generate_config(x),
+      Commands::Database(x) => return database::migrate(&settings, x).await,
     }
   }
 

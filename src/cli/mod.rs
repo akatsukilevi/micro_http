@@ -1,6 +1,7 @@
 use clap::*;
 
 pub mod config;
+pub mod database;
 
 #[derive(Parser, Clone, Debug)]
 #[command(author, version, about, long_about = None)]
@@ -15,6 +16,8 @@ pub struct Args {
 
 #[derive(Subcommand, Clone, Debug)]
 pub enum Commands {
+  /// Manage the connected database
+  Database(database::MigrateOptions),
   /// Generate a default configuration file to set-up the program
   GenerateConfig(config::GenerateConfigOptions),
 }

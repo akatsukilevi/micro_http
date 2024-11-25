@@ -1,35 +1,45 @@
-use std::io::{Error, ErrorKind};
+use sea_orm::{ConnectOptions, Database, DatabaseConnection};
+use std::{
+  io::{Error, ErrorKind},
+  time::Duration,
+};
 
 use serde::{Deserialize, Serialize};
-use sqlx::{sqlite::SqliteConnectOptions, SqlitePool};
 
 #[derive(Default, Serialize, Deserialize, Clone, Debug)]
 pub struct DatabaseConfiguration {
-  pub filename: String,
-  pub create_if_missing: Option<bool>,
-  pub foreign_keys: Option<bool>,
-  pub auto_vacuum: Option<bool>,
-  pub optimize_on_close: Option<bool>,
+  pub connection_string: String,
+  pub min_connections: Option<u32>,
+  pub max_connections: Option<u32>,
+  pub connection_timeout: Option<u64>,
+  pub acquire_timeout: Option<u64>,
+  pub idle_timeout: Option<u64>,
+  pub max_lifetime: Option<u64>,
+  pub logging: Option<bool>,
+  pub slow_query_threshold: Option<u64>,
 }
 
 pub async fn create_database(
   settings: &DatabaseConfiguration,
-) -> Result<SqlitePool, Error> {
-  // * Create the database options
-  let options = SqliteConnectOptions::new()
-    .filename(settings.filename.clone())
-    .create_if_missing(settings.create_if_missing.unwrap_or(false))
-    .foreign_keys(settings.foreign_keys.unwrap_or(true))
-    .auto_vacuum(match settings.auto_vacuum.unwrap_or(true) {
-      true => sqlx::sqlite::SqliteAutoVacuum::Full,
-      false => sqlx::sqlite::SqliteAutoVacuum::None,
-    })
-    .optimize_on_close(settings.optimize_on_close.unwrap_or(true), None);
+) -> Result<DatabaseConnection, Error> {
+  let mut options = ConnectOptions::new(settings.connection_string.clone());
+  options
+    .min_connections(settings.min_connections.unwrap_or(5))
+    .max_connections(settings.max_connections.unwrap_or(100))
+    .connect_timeout(Duration::from_secs(
+      settings.connection_timeout.unwrap_or(8),
+    ))
+    .acquire_timeout(Duration::from_secs(settings.acquire_timeout.unwrap_or(8)))
+    .idle_timeout(Duration::from_secs(settings.idle_timeout.unwrap_or(8)))
+    .max_lifetime(Duration::from_secs(settings.max_lifetime.unwrap_or(8)))
+    .sqlx_logging(settings.logging.unwrap_or(false))
+    .sqlx_logging_level(log::LevelFilter::Info)
+    .sqlx_slow_statements_logging_settings(
+      log::LevelFilter::Warn,
+      Duration::from_secs(settings.slow_query_threshold.unwrap_or(8)),
+    );
 
-  // * Connect the database pool
-  log::info!("Estabilishing connection with database");
-  match SqlitePool::connect_with(options).await {
-    Ok(x) => Ok(x),
-    Err(e) => return Err(Error::new(ErrorKind::NotConnected, e)),
-  }
+  Database::connect(options)
+    .await
+    .map_err(|e| Error::new(ErrorKind::NotConnected, e))
 }

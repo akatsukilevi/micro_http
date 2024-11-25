@@ -1,4 +1,3 @@
-use sqlx::SqlitePool;
 use std::{
   io::{Error, ErrorKind},
   sync::Arc,
@@ -11,7 +10,7 @@ pub struct AppState {
   pub templates: providers::templates::Templater,
   pub router: routing::Router,
   pub settings: Settings,
-  pub database: SqlitePool,
+  pub database: sea_orm::DatabaseConnection,
 }
 
 pub async fn listen(settings: &Settings) -> Result<(), Error> {
