@@ -4,7 +4,7 @@
 {% block content %}
 <h1>Hello, world!</h1>
 <p>Current counter: <span id="counter" hx-get="/counter/get" hx-trigger="load">Loading...</span></p>
-<p class="row">
+<p>
   <button class="button primary col" hx-post="/counter/increment" hx-target="#counter">Increase</button>
   <button class="button error col" hx-post="/counter/decrement" hx-target="#counter">Decrease</button>
 </p>

@@ -1,20 +1,29 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Page | {% block title %}{% endblock title %}</title>
-  <link rel="stylesheet" href="/assets/css/chota.min.css" />
-  <link rel="stylesheet" href="/assets/css/themes.css" />
-  <script src="/assets/js/htmx.min.js"></script>
+  <link rel="stylesheet" href="/assets/bundle/main.css" />
+  <link rel="stylesheet" href="/assets/themes.css" />
+  <script type="module" src="/assets/bundle/main.js"></script>
 </head>
+
 <body>
-  <main>
+  <main class="container">
     {% block content %}{% endblock content %}
   </main>
   <hr>
-  <footer>
+  <footer class="container">
     <i>tiny-http server, HTTP/1.1</i>
   </footer>
+
+  <script>
+    document.addEventListener('ready', () => {
+      Alpine.start();
+    });
+  </script>
 </body>
+
 </html>
