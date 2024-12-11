@@ -22,7 +22,10 @@ pub enum Commands {
   GenerateConfig(config::GenerateConfigOptions),
 }
 
-pub async fn parse_commands(commands: &Commands) {
+pub async fn parse_commands(
+  cmd: &Commands,
+  settings: &crate::config::Settings,
+) -> Result<(), std::io::Error> {
   match cmd {
     Commands::GenerateConfig(x) => return config::generate_config(&x),
     Commands::Database(x) => return database::migrate(&settings, &x).await,

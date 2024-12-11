@@ -11,7 +11,7 @@ async fn main() -> Result<(), Error> {
 
   // * Run subcommand if has one
   if let Some(cmd) = &args.command {
-    parse_commands(commands).await;
+    return parse_commands(cmd, &settings).await;
   }
 
   // * Spin up the server
