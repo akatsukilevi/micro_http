@@ -1,5 +1,5 @@
 {
-  "name": "@mocha/manager",
+  "name": "micro_http",
   "type": "module",
   "private": true,
   "scripts": {
