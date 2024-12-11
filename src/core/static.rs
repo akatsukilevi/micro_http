@@ -1,3 +1,4 @@
+use crate::core::routing::Router;
 use std::{fs::File, io::Read, path::Path};
 
 use crate::core::{
@@ -5,7 +6,7 @@ use crate::core::{
   routing::{AppState, HttpResponse, HttpResult},
 };
 
-pub fn serve(
+fn serve(
   _req: &tiny_http::Request,
   params: matchit::Params,
   state: AppState,
@@ -42,4 +43,10 @@ pub fn serve(
     Ok(..) => HttpResponse::raw(buffer, mime_type, Some(200)),
     Err(e) => Err(HttpError::InternalServerError(e)),
   }
+}
+
+pub fn with_static(mut router: Router) -> Router {
+  router.insert("/{*path}", Box::new(serve)).unwrap();
+
+  router
 }

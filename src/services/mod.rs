@@ -1,9 +1,7 @@
-use crate::core::routing::Router;
+use crate::core::{r#static, routing::Router};
 
 mod counter;
 mod homepage;
-
-mod r#static;
 
 pub fn router() -> Router {
   let mut router = Router::new();
@@ -21,8 +19,5 @@ pub fn router() -> Router {
     .insert("/counter/decrement", Box::new(counter::decrement))
     .unwrap();
 
-  router
-    .insert("/{*path}", Box::new(r#static::serve))
-    .unwrap();
-  router
+  r#static::with_static(router)
 }
