@@ -21,3 +21,10 @@ pub enum Commands {
   /// Generate a default configuration file to set-up the program
   GenerateConfig(config::GenerateConfigOptions),
 }
+
+pub async fn parse_commands(commands: &Commands) {
+  match cmd {
+    Commands::GenerateConfig(x) => return config::generate_config(&x),
+    Commands::Database(x) => return database::migrate(&settings, &x).await,
+  }
+}

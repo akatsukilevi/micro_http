@@ -11,10 +11,7 @@ async fn main() -> Result<(), Error> {
 
   // * Run subcommand if has one
   if let Some(cmd) = &args.command {
-    match cmd {
-      Commands::GenerateConfig(x) => return config::generate_config(x),
-      Commands::Database(x) => return database::migrate(&settings, x).await,
-    }
+    parse_commands(commands).await;
   }
 
   // * Spin up the server
